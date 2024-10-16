@@ -61,3 +61,32 @@ def get_two_random_movies():
         poster = i[4]
         movies.append(Movie(id, name, director, score, poster))
     return movies
+
+def get_all_movies():
+    try:
+        con = mysql.connector.connect(**configure)
+        if con.is_connected():
+            cur = con.cursor()
+            query = "SELECT * FROM films ORDER BY score DESC, film_id"
+            cur.execute(query)
+            res = cur.fetchall()
+            print("movies were successfully fetched")
+    except OSError as e:
+        print(f"Erro ao acessar dados no MySQL: {e}")
+    finally:
+        if cur:
+            cur.close()
+        if con:
+            con.close()
+    return res
+
+
+def build_movie_list():
+    movie_list = []
+    movies_data = get_all_movies()
+    position = 1
+    for movie_tuple in movies_data:
+        movie = Movie(position, movie_tuple[1], movie_tuple[2], movie_tuple[3], movie_tuple[4])
+        movie_list.append(movie)
+        position += 1
+    return movie_list

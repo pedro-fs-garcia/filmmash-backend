@@ -1,5 +1,4 @@
 from movie import Movie
-from flask import jsonify
 import json
 
 class Arena:
