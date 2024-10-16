@@ -1,0 +1,201 @@
+{
+    "akira_kurosawa":[
+        "the seven samurai",
+        "the bad sleeps well",
+        "high and low",
+        "yojimbo",
+        "rashomon",
+        "sanjuro",
+        "red beard"
+    ],
+
+    "stanley_kubrick":[
+        "the shining",
+        "barry lyndon",
+        "eyes wide shut",
+        "full metal jacket",
+        "dr strangelove",
+        "the clockwork orange",
+        "2001 a space odyssey"
+    ],
+
+    "orson_welles":[
+        "citizen kane",
+        "f for fake"
+    ],
+
+    "billy_wilder":[
+        "the apartment",
+        "some like it hot",
+        "ace in the hole",
+        "witness for the prosecution",
+        "double indemnity"
+    ],
+
+    "martin_scorsese":[
+        "goodfellas",
+        "taxi driver",
+        "after hours",
+        "the_king_of_comedy",
+        "the irishman",
+        "the wolf of wallstreet",
+        "casino",
+        "the aviator",
+        "the departed"
+    ],
+
+    "buster_keaton":[
+        "the general"
+    ],
+
+    "ingmar_bergman":[
+        "summer with monika",
+        "the seventh seal"
+
+    ],
+
+    "david_fincher":[
+        "gone girl",
+        "fight club",
+        "the social network",
+        "seven",
+        "zodiac",
+        "mank"
+    ],
+
+    "david_lynch":[
+        "mulholland drive",
+        "the elephant man",
+        "blue velvet"
+    ],
+
+    "paul_thomas_anderson":[
+        "the master",
+        "there will be blood",
+        "magnolia",
+        "boogie nights",
+        "punch drunk love"
+    ],
+
+    "hayao_miyazaki":[
+        "mononoke hime",
+        "spirited away",
+        "my neighbour Totoro"
+    ],
+
+    "park_chan_wook":[
+        "the handmaiden",
+        "stoker",
+        "oldboy",
+        "lady vengeance"
+    ],
+
+    "the_coens":[
+        "burn after reading",
+        "o brother where art thou",
+        "fargo",
+        "no country for old men",
+        "the big lebowski"
+    ],
+
+    "robert_eggers":[
+        "the witch",
+        "the lighthouse",
+        "the northman"
+    ],
+
+    "damien_chazelle":[
+        "babylon"
+    ],
+
+    "satoshi_kon":[
+        "perfect blue",
+        "paprika"
+    ],
+
+    "alejandro_inarritu":[
+        "the revenant",
+        "birdman",
+        "babel"
+    ],
+
+    "bong_joon_ho":[
+        "parasite",
+        "memories of murder"
+
+    ],
+
+    "quentin_tarantino":[
+        "inglorious basterds",
+        "pulp fiction",
+        "reservoir dogs",
+        "django",
+        "the hateful eight"
+    ],
+
+    "lars_von_trier":[
+        "dogville",
+        "melancolia"
+    ],
+
+    "alfonso_cuaron":[
+        "children of men"
+    ],
+
+    "the_safdies":[
+        "uncut gems",
+        "good time"
+    ],
+
+    "others":[
+        "back to the future",
+        "alien",
+        "blade runner",
+        "suspiria",
+        "elite squad",
+        "stealing beauty",
+        "silence of the lambs",
+        "the king of comedy",
+        "ex machina",
+        "my neighbour totoro",
+        "pirates of the caribbean",
+        "the good the bad and the ugly",
+        "the matrix",
+        "the killer",
+        "crimson peak",
+        "black swan",
+        "requiem for a dream",
+        "the untouchables",
+        "the godfather",
+        "american psycho",
+        "funny games",
+        "psycho",
+        "rear window",
+        "dog day afternoon",
+        "12 angry men",
+        "drive",
+        "the favourite",
+        "o auto da compadecida",
+        "the hunt",
+        "druk",
+        "victoria",
+        "the great budapest hotel",
+        "the schindlers list",
+        "dunkirk",
+        "tenet",
+        "batman the dark knight",
+        "memento",
+        "american beauty",
+        "city of god",
+        "o homem que copiava",
+        "the big short",
+        "possession",
+        "collateral",
+        "shaun of the dead",
+        "heat",
+        "apocalypse now",
+        "lawrence of arabia",
+        "la dolce vitta"
+
+    ]
+}
