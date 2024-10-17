@@ -1,5 +1,6 @@
 from movie import Movie
 import json
+import database
 
 class Arena:
     def __init__(self, movie1 = None, movie2 = None, winner = None):
@@ -71,3 +72,25 @@ class Arena:
             }
         }
         return json.dumps(tojson)
+
+
+def build_arena():
+    movies = database.get_two_random_movies()
+    return Arena(movies[0], movies[1], None)
+
+
+def set_arena_from_post(json_dict: dict):
+    movie1_id = int(json_dict.get("movie1"))
+    movie2_id = int(json_dict.get("movie2"))
+    new_arena = Arena()
+    new_arena.movie1 = database.get_movie_by_id(movie1_id)
+    new_arena.movie2 = database.get_movie_by_id(movie2_id)
+    winner = json_dict.get("winner")
+    if winner == movie1_id: new_arena.winner = 1
+    elif winner == movie2_id: new_arena.winner = 2
+    return new_arena
+
+
+def save_new_scores(arena:Arena):
+    movies = arena.calculate_new_scores()
+    database.update_scores(movies[0], movies[1])

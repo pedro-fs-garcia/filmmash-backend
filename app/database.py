@@ -2,15 +2,10 @@ import mysql.connector
 import sys
 import config
 import json
-from arena import Arena
 from movie import Movie
 
 configure = {"user": f"{config.DB_USER}", "password": f"{config.DB_PASSWORD}", "host": f"{config.DB_HOST}", "database": f"{config.DB_NAME}"}
 
-
-def build_arena():
-    movies = get_two_random_movies()
-    return Arena(movies[0], movies[1], None)
 
 
 def update_scores(winner: Movie, loser: Movie):
@@ -30,11 +25,6 @@ def update_scores(winner: Movie, loser: Movie):
             cur.close()
         if con:
             con.close()
-
-
-def save_new_scores(arena: Arena):
-    movies = arena.calculate_new_scores()
-    update_scores(movies[0], movies[1])
 
 
 def get_two_random_movies():
@@ -90,3 +80,25 @@ def build_movie_list():
         movie_list.append(movie)
         position += 1
     return movie_list
+
+
+def get_movie_by_id(movie_id:int) -> Movie :
+    try:
+        con = mysql.connector.connect(**configure)
+        if con.is_connected():
+            cur = con.cursor()
+            query = "SELECT film_id, name, director, score, poster FROM films WHERE film_id = %s"
+            cur.execute(query, (movie_id,))
+            res = cur.fetchall()
+    except OSError as e:
+        print(f"Erro ao inserir dados no MySQL: {e}")
+    finally:
+        if cur:
+            cur.close()
+        if con:
+            con.close()
+    if len(res) > 0:
+        res = res[0]
+        movie = Movie(res[0], res[1], res[2], res[3], res[4])
+        return movie
+    return None
