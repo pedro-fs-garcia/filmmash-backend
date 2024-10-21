@@ -34,7 +34,7 @@ def write_movies(directors_films):
                 for filme in filmes:
                     director = diretor.replace("_", " ").title()
                     posterName = f"{filme.replace(' ', '_')}.jpg"
-                    posterUrl = "https://raw.githubusercontent.com/pedro-fs-garcia/grandes_filmes/refs/heads/main/app/static/images/films/" + posterName
+                    posterUrl = "https://raw.githubusercontent.com/pedro-fs-garcia/filmmash-backend/refs/heads/main/app/static/images/" + posterName
                     score = 1400
                     values = (filme.replace("_", " ").capitalize(), director, score, posterUrl)
                     cur.execute(query, values)
