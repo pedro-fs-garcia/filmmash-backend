@@ -1,24 +1,24 @@
-from flask import Flask, request, jsonify
-import database
-import arena
-from movie_list import Movie_list
-
-app = Flask(__name__)
+from flask import Blueprint, request, jsonify
+import app.models.arena as arena
+from app.models.movie_list import Movie_list
 
 
-@app.route("/get_arena_json", methods = ["GET"])
+main = Blueprint("main", __name__)
+
+
+@main.route("/get_arena_json", methods = ["GET"])
 def get_arena_json():
     new_arena = arena.build_arena()
     return new_arena.to_json()
 
 
-@app.route("/get_all_ratings", methods = ["GET"])
+@main.route("/get_all_ratings", methods = ["GET"])
 def get_all_ratings():
     movie_list = Movie_list()
     return movie_list.to_json()
 
 
-@app.route("/post_winner", methods = ["POST"])
+@main.route("/post_winner", methods = ["POST"])
 def post_winner():
     arena_res = request.get_json()
     if not arena_res:
@@ -33,7 +33,3 @@ def post_winner():
     arena.save_new_scores(new_arena)
 
     return jsonify({"message": "Winner received successfully", "winner": winner})
-
-
-if __name__ == "__main__":
-    app.run(host = "0.0.0.0", port = "5000", debug = True)

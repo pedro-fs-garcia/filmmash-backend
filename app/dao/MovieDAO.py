@@ -1,8 +1,6 @@
 import mysql.connector
-import sys
-import config
-import json
-from movie import Movie
+from app import config
+from app.models.movie import Movie
 
 configure = {"user": f"{config.DB_USER}", "password": f"{config.DB_PASSWORD}", "host": f"{config.DB_HOST}", "database": f"{config.DB_NAME}"}
 
@@ -13,9 +11,9 @@ def update_scores(winner: Movie, loser: Movie):
         con = mysql.connector.connect(**configure)
         if con.is_connected():
             cur = con.cursor()
-            query = "UPDATE films SET score = %s WHERE film_id = %s"
-            cur.execute(query, (winner.score, winner.id))
-            cur.execute(query, (loser.score, loser.id))
+            query = "UPDATE movies SET elo = %s WHERE id = %s"
+            cur.execute(query, (winner.elo, winner.id))
+            cur.execute(query, (loser.elo, loser.id))
             con.commit()
             print("scores were successfully updated")
     except OSError as e:
@@ -32,7 +30,7 @@ def get_two_random_movies():
         con = mysql.connector.connect(**configure)
         if con.is_connected():
             cur = con.cursor()
-            query = "SELECT * FROM films ORDER BY RAND() LIMIT 2"
+            query = "SELECT * FROM movies ORDER BY RAND() LIMIT 2"
             cur.execute(query)
             res = cur.fetchall()
     except OSError as e:
@@ -47,9 +45,10 @@ def get_two_random_movies():
         id = i[0]
         name = i[1]
         director = i[2]
-        score = i[3]
+        year = i[3]
         poster = i[4]
-        movies.append(Movie(id, name, director, score, poster))
+        elo = i[5]
+        movies.append(Movie(id, name, director, year, poster, elo))
     return movies
 
 def get_all_movies():
@@ -57,7 +56,7 @@ def get_all_movies():
         con = mysql.connector.connect(**configure)
         if con.is_connected():
             cur = con.cursor()
-            query = "SELECT * FROM films ORDER BY score DESC, film_id"
+            query = "SELECT * FROM movies ORDER BY elo DESC, id"
             cur.execute(query)
             res = cur.fetchall()
             print("movies were successfully fetched")
@@ -76,7 +75,7 @@ def build_movie_list():
     movies_data = get_all_movies()
     position = 1
     for movie_tuple in movies_data:
-        movie = Movie(position, movie_tuple[1], movie_tuple[2], movie_tuple[3], movie_tuple[4])
+        movie = Movie(position, movie_tuple[1], movie_tuple[2], movie_tuple[3], movie_tuple[4], movie_tuple[5])
         movie_list.append(movie)
         position += 1
     return movie_list
@@ -87,7 +86,7 @@ def get_movie_by_id(movie_id:int) -> Movie :
         con = mysql.connector.connect(**configure)
         if con.is_connected():
             cur = con.cursor()
-            query = "SELECT film_id, name, director, score, poster FROM films WHERE film_id = %s"
+            query = "SELECT * FROM movies WHERE id = %s"
             cur.execute(query, (movie_id,))
             res = cur.fetchall()
     except OSError as e:
@@ -99,6 +98,6 @@ def get_movie_by_id(movie_id:int) -> Movie :
             con.close()
     if len(res) > 0:
         res = res[0]
-        movie = Movie(res[0], res[1], res[2], res[3], res[4])
+        movie = Movie(res[0], res[1], res[2], res[3], res[4], res[5])
         return movie
     return None
