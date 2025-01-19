@@ -25,8 +25,15 @@ create_tables_script = """
                 """
 
 
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 # Configurações
-API_KEY = "475851a7b9dae620e187de8a77fbdabc"
+API_KEY = os.getenv("API_KEY")
+API_TOKEN = os.getenv("API_TOKEN")
 BASE_URL = "https://api.themoviedb.org/3"
 POSTER_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
@@ -115,12 +122,12 @@ def get_diretor(movie_id):
 def get_movies_by_top_rated() -> list|None:
     movies = []
     count = 0
-    for page in range(1,3):
+    for page in range(1,3): #20 filmes por pagina
         url = f"https://api.themoviedb.org/3/movie/top_rated?language=en-US&page={page}"
 
         headers = {
             "accept": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzU4NTFhN2I5ZGFlNjIwZTE4N2RlOGE3N2ZiZGFiYyIsIm5iZiI6MTczNzIxMjUxMS42NjUsInN1YiI6IjY3OGJjMjVmMDhkZDcwOGJiOTZkZTAwNSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.rabzs1fy3QwieG2IGs9Yh-d1z9DmJguI8rRV2evv770"
+            "Authorization": f"Bearer {API_TOKEN}"
         }
 
         response = requests.get(url, headers=headers)
