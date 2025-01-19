@@ -1,6 +1,7 @@
-from app import config
 from mysql.connector import connect, Error
 import requests
+from app import config
+from app.models.movie import Movie
 from app.utils.logging_config import app_logger, error_logger
 
 configure = {
@@ -23,7 +24,6 @@ create_tables_script = """
                     PRIMARY KEY (id)
                     );
                 """
-
 
 
 from dotenv import load_dotenv
@@ -104,7 +104,6 @@ def is_table_empty(table_name):
             conn.close()
 
 
-
 # Função para buscar o diretor de um filme
 def get_diretor(movie_id):
     url = f"{BASE_URL}/movie/{movie_id}/credits"
@@ -118,11 +117,42 @@ def get_diretor(movie_id):
     return "Desconhecido"
 
 
-
-def get_movies_by_top_rated() -> list|None:
+def get_movies_by_most_voted() -> list[Movie]|None:
     movies = []
     count = 0
-    for page in range(1,3): #20 filmes por pagina
+    for page in range(1,51): #20 filmes por pagina
+        url = f"https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page={page}&sort_by=vote_count.desc"
+        headers = {
+            "accept": "application/json",
+            "Authorization": f"Bearer {API_TOKEN}"
+        }
+
+        response = requests.get(url, headers=headers)
+        print(f"PAGE {page}")
+        if response.status_code == 200:
+            filmes = response.json().get('results', [])
+            for filme in filmes:
+                movie_id = filme['id']
+                titulo = filme['title']
+                ano = int(filme['release_date'].split("-")[0]) if filme['release_date'] else None
+                poster_url = POSTER_BASE_URL + filme['poster_path'] if filme['poster_path'] else None
+                diretor = get_diretor(movie_id)
+                count = count + 1
+                print(f"{count} -> {movie_id, titulo, diretor, ano}")
+                movies.append(Movie(movie_id, titulo, diretor, ano, poster_url, 1400))
+            app_logger.info(f"{count} most voted movies fetched from TMDB")
+
+        else:
+            error_logger.error(f"Error when accessing page {page}: {response.status_code}")
+            break
+
+    return movies
+
+
+def get_movies_by_top_rated() -> list[Movie]|None:
+    movies = []
+    count = 0
+    for page in range(1,51): #20 filmes por pagina
         url = f"https://api.themoviedb.org/3/movie/top_rated?language=en-US&page={page}"
 
         headers = {
@@ -143,25 +173,26 @@ def get_movies_by_top_rated() -> list|None:
                 diretor = get_diretor(movie_id)
                 count = count + 1
                 print(f"{count} -> {movie_id, titulo, diretor, ano}")
-                movies.append((movie_id, titulo, diretor, ano, poster_url, 1400))
+                movies.append(Movie(movie_id, titulo, diretor, ano, poster_url, 1400))
+            app_logger.info(f"{count} top rated movies fetched from TMDB")
 
         else:
-            print(f"Erro ao buscar filmes na página {page}: {response.status_code}")
+            error_logger.error(f"Error when accessing page {page}: {response.status_code}")
             break
 
     return movies
 
 
-def insert_movies():
-    movie_list = get_movies_by_top_rated()
+def insert_movies(movie_set:set[Movie]):
     query = """
         INSERT INTO movies (id, title, director, year, poster_url, elo)
         VALUES (%s, %s, %s, %s, %s, %s)
         """
+    list_of_tuples = [(movie.id,movie.title,movie.director,movie.year,movie.poster_url,movie.elo) for movie in movie_set]
     try:
         conn = connect(**configure)
         with conn.cursor() as cur:
-            cur.executemany(query, movie_list)
+            cur.executemany(query, list_of_tuples)
             app_logger.info(f"{cur.rowcount} movies inserted successfully.")
         conn.commit()  # Salva as alterações no banco
     except Error as e:
@@ -170,6 +201,37 @@ def insert_movies():
     finally:
         if conn.is_connected():
             conn.close()
+
+
+def insert_movies_from_list(movie_list:set[Movie]):
+    insert_query = """
+        INSERT INTO movies (id, title, director, year, poster_url, elo)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """
+    verification_query = "SELECT COUNT(*) FROM movies WHERE id = %s"
+    count = 0
+    try:
+        conn = connect(**configure)
+        with conn.cursor() as cur:
+            for movie in movie_list:
+                cur.execute(verification_query, (movie.id,))
+                res = cur.fetchone()
+
+                if res[0] == 0:
+                    cur.execute(insert_query, (movie.id, movie.title, movie.director, movie.year, movie.poster_url, movie.elo))
+                    conn.commit()
+                    count += 1
+                    #app_logger.info(f"Movie {movie.title} inserted successfully.")
+                else:
+                    print(f"Movie {movie.title} is already in the database.")
+        conn.commit()
+        app_logger.info(f"{count} movies inserted successfully")
+    except Error as e:
+        error_logger.error(f"Error inserting movies: {e}")
+        conn.rollback()
+    finally:
+        if conn.is_connected(): conn.close()
+
 
 
 def init_db():
@@ -188,10 +250,11 @@ def init_db():
         app_logger.info("Tables creation step completed successfully.")
 
         if is_table_empty("movies"):
-            insert_movies()
+            insert_movies(get_movies_by_most_voted())
+            insert_movies_from_list(get_movies_by_top_rated())
             app_logger.info("Movies insertion step completed.")
         else:
-            app_logger.info("Table 'movies' already has entries.")
+            app_logger.info("Table 'movies' is not empty.")
 
     except Exception as e:
         error_logger.error(f"Error during database initialization: {e}")

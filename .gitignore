@@ -3,3 +3,4 @@ venv/
 .env
 logs/
 test.py
+teste.py
